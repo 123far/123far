@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>互动文本游戏</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; }
+    #game-container { max-width: 600px; margin: 20px auto; text-align: center; }
+    .btn { padding: 10px 20px; margin: 10px; background-color: #3498db; color: white; border: none; cursor: pointer; }
+    .btn:hover { background-color: #2980b9; }
+    .image { width: 100%; max-width: 500px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="story-text"></div>
+    <img id="game-image" class="image" src="" alt="" style="display:none;">
+    <div id="choices"></div>
+  </div>
+
+  <script>
+    const storyData = [
+      {
+        text: "欢迎来到我们的冒险游戏！你准备好了吗？",//0
+        img: "image1.jpg",
+        choices: [
+          { text: "是的，开始吧！", next: 1 },
+          { text: "再等等", next: 2 }
+        ]
+      },
+      {
+        text: "你选择了开始冒险！你走进了一片神秘的森林，周围充满了未知的声音。",//1
+        img: "forest.jpg",
+        choices: [
+          { text: "继续前进", next: 3 },
+          { text: "退回家里", next: 4 }
+        ]
+      },
+      {
+        text: "你决定再等等，最终选择了不冒险。你回到家里，感到有些失落。",//2
+        img: "wait.jpg",
+        choices: [
+          { text: "再次尝试冒险", next: 1 },
+          { text: "去做点别的事情", next: 5 }
+        ]
+      },
+      {
+        text: "你决定继续前进，越走越深，发现了一个野人。",//3
+        img: "yeren.jpg",
+        choices: [
+          { text: "继续往前探险", next: 6 },
+          { text: "绕过野人，继续走", next: 7 }
+        ]
+      },
+      {
+        text: "你选择退回家里。虽然没有冒险成功，但你觉得安全和温暖。",//4
+        img: "home.jpg",
+        choices: [
+          { text: "去放松", next: 8 },
+          { text: "休息一下，重新开始", next: 1 }
+        ]
+      },
+      {
+        text: "你决定做点别的事情，坐下来去坐个木马，享受片刻的安宁。",//5
+        img: "muma.jpg",
+        choices: [
+          { text: "重新开始冒险", next: 1 },
+          { text: "去散步放松", next: 9 }
+        ]
+      },
+      {
+        text: "你走进了小屋，里面充满了尘土和古老的气息。突然，你发现了一个奇怪的小车。",//6
+        img: "che.jpg",
+        choices: [
+          { text: "坐上车子看看", next: 10 },
+          { text: "离开", next: 11 }
+        ]
+      },
+      {
+        text: "你决定绕过小屋，继续走，突然你看到刚才那一只野人从树丛中窜出。",//7
+        img: "heying.jpg",
+        choices: [
+          { text: "和野人合影", next: 12 },
+          { text: "忽略野人，继续走", next: 13 }
+        ]
+      },
+      {
+        text: "你回到家里，决定去看电影放松一下。你坐在沙发上，放松地享受电影。",//8
+        img: "movie.jpg",
+        choices: [
+          { text: "看完电影后继续冒险", next: 1 },
+          { text: "吃点零食休息一下", next: 5 }
+        ]
+      },
+      {
+        text: "你决定去散步，外面的天气很好，空气清新。走着走着，你发现了一片美丽的花园。",//9
+        img: "garden.jpg",
+        choices: [
+          { text: "在花园里待一会儿", next: 14 },
+          { text: "继续散步，去探索新地方", next: 15 }
+        ]
+      },
+      {
+        text: "你坐上了车子，里面有两张闪闪发光的照片。你拿起照片，突然一阵光芒闪过。",//10
+        img: "necklace.jpg",
+        choices:  [
+          { text: "探索相片的秘密", next: 11 },
+          { text: "把相片带回家", next: 8 }
+        ]
+      },
+      {
+        text: "你决定带着相片离开。外面风起云涌，似乎有什么不寻常的事情正在发生。",//11
+        img: "storm.jpg",
+        choices: [
+          { text: "赶紧回家", next: 4 },
+          { text: "继续前进，看看发生了什么", next: 3 }
+        ]
+      },
+      {
+        text: "你跟着野人走，它把你带到了一片神秘的树林，空气中弥漫着魔法的气息。",//12
+        img: "heying.jpg",
+        choices: [
+          { text: "深入树林探索", next: 13 },
+          { text: "回到起点", next: 1 }
+        ]
+      },
+      {
+        text: "你决定忽略野人，继续走，突然你被一阵清风吹到了一座古老的必胜客。",//13
+        img: "bishengke.jpg",
+        choices: [
+          { text: "吃点东西", next: 14 },
+          { text: "返回家里", next: 4 }
+        ]
+      },
+      {
+        text: "你在必胜客里待了很久，心情变得愉悦和放松。天色渐晚，你决定回家。",//14
+        img: "sun.jpg",
+        choices: [
+          { text: "回家休息", next: 4 },
+          { text: "继续散步", next: 9 }
+        ]
+      },
+      {
+        text: "你继续散步，进入了一个未知的区域，突然发现了一条隐藏的小路。",//15
+        img: "hidden_path.jpg",
+        choices: [
+          { text: "走上小路", next: 0 },  // 此处修改为合适的next值，假设你有20个节点
+          { text: "返回花园", next: 9 }
+        ]
+      }
+    ];
+
+    let currentStep = 0;
+
+    function renderGameStep(stepIndex) {
+      const step = storyData[stepIndex];
+      document.getElementById('story-text').textContent = step.text;
+      const imageElement = document.getElementById('game-image');
+      if (step.img) {
+        imageElement.style.display = 'block';
+        imageElement.src = step.img;
+      } else {
+        imageElement.style.display = 'none';
+      }
+      const choicesContainer = document.getElementById('choices');
+      choicesContainer.innerHTML = '';
+      step.choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.classList.add('btn');
+        button.textContent = choice.text;
+        button.onclick = () => renderGameStep(choice.next);
+        choicesContainer.appendChild(button);
+      });
+    }
+
+    // 初始加载
+    renderGameStep(currentStep);
+  </script>
+</body>
+</html>
